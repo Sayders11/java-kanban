@@ -7,12 +7,6 @@ public class Main {
     public static void main(String[] args) {
         TaskManager taskManager = new TaskManager();
 
-        /*
-        Привет! Спасибо за подробные комментарии и советы :)
-        Тестировочный код здесь был, но перед коммитом удалял его после тестов,
-        думал, что автотесты всё покроют и без него.
-         */
-
         Task task1 = new Task("First task", "something to do");
         Task task2 = new Task("Second task", "smth should do");
 
