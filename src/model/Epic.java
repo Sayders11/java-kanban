@@ -4,30 +4,30 @@ import java.util.ArrayList;
 
 public class Epic extends Task {
 
-    private ArrayList<Integer> subTasksIds = new ArrayList<>();
+    private ArrayList<Integer> subtasksIds = new ArrayList<>();
 
     public Epic(String name, String description) {
         super(name, description);
     }
 
-    public ArrayList<Integer> getSubTasksIds() {
-        return subTasksIds;
+    public ArrayList<Integer> getSubtasksIds() {
+        return subtasksIds;
     }
 
     public int getSubTaskId(int index) {
-        return subTasksIds.get(index);
+        return subtasksIds.get(index);
     }
 
     public int subTasksIdsSize() {
-        return subTasksIds.size();
+        return subtasksIds.size();
     }
 
     public void clearSubTasks() {
-        subTasksIds.clear();
+        subtasksIds.clear();
     }
 
-    public boolean subTaskListIsEmpty() {
-        return subTasksIds.isEmpty();
+    public boolean subtaskListIsEmpty() {
+        return subtasksIds.isEmpty();
     }
 
     @Override
@@ -38,7 +38,7 @@ public class Epic extends Task {
                 ", status='" + getStatus() + '\'' +
                 ", description=" + getDescription() + '\'' +
                 ", id=" + getId() + '\'' +
-                "subTasksIds: " + subTasksIds.toArray();
+                "subtasksIds: " + subtasksIds.toArray();
     }
 
 }
