@@ -16,7 +16,7 @@ class SubtaskTest {
         Subtask expectedSubtask = subtask;
         expectedSubtask.setId(subtask.getId());
 
-        assertEqualsSubtask(expectedSubtask, subtask, "ID должны быть равны:");
+        assertEqualsSubtask(expectedSubtask, subtask, "Не равны друг другу");
     }
 
     private static void assertEqualsSubtask(Subtask expected, Subtask actual, String msg) {

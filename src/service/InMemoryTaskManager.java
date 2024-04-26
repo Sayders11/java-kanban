@@ -4,14 +4,15 @@ import model.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
 
     private HashMap<Integer, Task> tasks = new HashMap<>();
     private HashMap<Integer, Epic> epics = new HashMap<>();
-    private HashMap<Integer, Subtask> subTasks = new HashMap<>();
+    private HashMap<Integer, Subtask> subtasks = new HashMap<>();
     private int seq = 0;
-    private InMemoryHistoryManager historyManager;
+    private HistoryManager historyManager;
 
     public InMemoryTaskManager(InMemoryHistoryManager historyManager) {
         this.historyManager = historyManager;
@@ -34,7 +35,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Subtask createSubtask(Subtask subTask) {
         subTask.setId(generateId());
-        subTasks.put(subTask.getId(), subTask);
+        subtasks.put(subTask.getId(), subTask);
         return subTask;
     }
 
@@ -53,12 +54,12 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Subtask getSubtask(int id) {
         historyManager.add(id);
-        return subTasks.get(id);
+        return subtasks.get(id);
     }
 
     @Override
     public ArrayList<Task> getAllTasks() {
-        return new ArrayList<>(subTasks.values());
+        return new ArrayList<>(subtasks.values());
     }
 
     @Override
@@ -68,7 +69,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public ArrayList<Subtask> getAllSubtasks() {
-        return new ArrayList<>(subTasks.values());
+        return new ArrayList<>(subtasks.values());
     }
 
 
@@ -111,7 +112,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteEpic(int id) {
         Epic removeEpic = epics.remove(id);
         for (Integer subTaskId : removeEpic.getSubtasksIds()) {
-            subTasks.remove(subTaskId);
+            subtasks.remove(subTaskId);
         }
     }
 
@@ -119,7 +120,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteSubtask(int id) {
         Integer objId = id;
 
-        Subtask removeSubtask = subTasks.remove(id);
+        Subtask removeSubtask = subtasks.remove(id);
         Epic savedEpic = epics.get(removeSubtask.getEpicId());
         savedEpic.getSubtasksIds().remove(objId);
         updateStatus(savedEpic);
@@ -133,7 +134,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteAllEpics() {
         epics.clear();
-        subTasks.clear();
+        subtasks.clear();
     }
 
     @Override
@@ -141,14 +142,14 @@ public class InMemoryTaskManager implements TaskManager {
         for (Epic epic : epics.values()) {
             epic.clearSubTasks();
         }
-        subTasks.clear();
+        subtasks.clear();
     }
 
     @Override
     public ArrayList<Subtask> getSubtasksFromEpic(int epicId) {
         ArrayList<Subtask> list = new ArrayList<>();
 
-        for (Subtask subTask : subTasks.values()) {
+        for (Subtask subTask : subtasks.values()) {
             if (subTask.getEpicId() == epicId) {
                 list.add(subTask);
             }
@@ -156,8 +157,30 @@ public class InMemoryTaskManager implements TaskManager {
         return list;
     }
 
+    @Override
+    public List<Task> getHistory() {
+        List<Task> historyObjects = new ArrayList<>();
+        List<Integer> historyIds = historyManager.getHistory();
+
+        // Вот тут не уверен: нашел инфу, что копировать список можно посредством добавления старого в новый addAll()
+        // В случае ниже сохранятся сами ссылки на объекты или это будут новые объекты?
+        // p.s. Знаю, что это решение не самое лучшее, однако сложность должна быть O(1)
+        // плюс не хотелось бы уходить от плоской модели с айдишками
+        for (int i = 0; i < historyIds.size(); i++) {
+            int objId = historyIds.get(i);
+            if(tasks.get(objId) != null) {
+                historyObjects.add(tasks.get(objId));
+            } else if (epics.get(objId) != null) {
+                historyObjects.add(epics.get(objId));
+            } else if (subtasks.get(objId) != null) {
+                historyObjects.add(subtasks.get(objId));
+            }
+        }
+        return historyObjects;
+    }
+
     private void updateStatus(Epic epic) {
-        if (isAllNew(epic)) { // epic.subtaskListIsEmpty() ||
+        if (isAllNew(epic)) {
             epic.setStatus(Status.NEW);
         } else if (isAllDone(epic)) {
             epic.setStatus(Status.DONE);
@@ -167,7 +190,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     private boolean isAllNew(Epic epic) {
-        for (Subtask subTask : subTasks.values()) {
+        for (Subtask subTask : subtasks.values()) {
             if (subTask.getEpicId() == epic.getId() && subTask.getStatus() != (Status.NEW)) {
                 return false;
             }
@@ -176,7 +199,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     private boolean isAllDone(Epic epic) {
-        for (Subtask subTask : subTasks.values()) {
+        for (Subtask subTask : subtasks.values()) {
             if (subTask.getEpicId() == epic.getId() && subTask.getStatus() != (Status.DONE)) {
                 return false;
             }

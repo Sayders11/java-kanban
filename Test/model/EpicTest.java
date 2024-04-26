@@ -15,7 +15,7 @@ class EpicTest {
         Epic expectedEpic = epic;
 
 
-        assertEqualsEpic(expectedEpic, epic, "ID должны быть равны");
+        assertEqualsEpic(expectedEpic, epic, "Не равны друг другу");
     }
 
     private static void assertEqualsEpic(Epic expected, Epic actual, String msg) {

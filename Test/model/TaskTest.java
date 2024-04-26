@@ -15,7 +15,7 @@ class TaskTest {
         Task taskExpected = task;
         taskExpected.setId(task.getId());
 
-        assertEqualsTask(taskExpected, task, "ID должны быть равны:");
+        assertEqualsTask(taskExpected, task, "Не равны друг другу");
     }
 
     private static void assertEqualsTask(Task expected, Task actual, String msg) {
