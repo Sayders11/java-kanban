@@ -14,16 +14,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @DisplayName("Менеджер задач")
 class TaskManagerTest {
     InMemoryTaskManager manager;
-    // Можно ли тут было сделать так?
-    // TaskManager manager;
     private Task task;
     private Epic epic;
     private Subtask subtask;
 
     @BeforeEach
     void init() {
-        // А тут:
-        // manager = Managers.getDefaults();
         InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
         manager = new InMemoryTaskManager(historyManager);
         Task task = new Task("taskName", "taskDescription");
