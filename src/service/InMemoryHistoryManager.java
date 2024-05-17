@@ -8,8 +8,6 @@ import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
-    private TaskManager Taskmanager;
-
     private static class Node {
         Task item;
         Node next;
