@@ -14,12 +14,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class HistoryManagerTest {
     InMemoryHistoryManager hManager = new InMemoryHistoryManager();
     InMemoryTaskManager tManager = new InMemoryTaskManager(hManager);
-    private Task task1;
-    private Task task2;
-    private Epic epic1;
-    private Epic epic2;
-    private Subtask subtask1;
-    private Subtask subtask2;
+    Task task1;
+    Task task2;
+    Epic epic1;
+    Epic epic2;
+    Subtask subtask1;
+    Subtask subtask2;
 
     @BeforeEach
     void init() {

@@ -14,9 +14,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @DisplayName("Менеджер задач")
 class TaskManagerTest {
     InMemoryTaskManager manager;
-    private Task task;
-    private Epic epic;
-    private Subtask subtask;
+    Task task;
+    Epic epic;
+    Subtask subtask;
 
     @BeforeEach
     void init() {
