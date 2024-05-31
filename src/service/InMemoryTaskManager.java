@@ -1,6 +1,9 @@
 package service;
 
-import model.*;
+import model.Epic;
+import model.Status;
+import model.Subtask;
+import model.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,11 +11,11 @@ import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
 
-    private HashMap<Integer, Task> tasks = new HashMap<>();
-    private HashMap<Integer, Epic> epics = new HashMap<>();
-    private HashMap<Integer, Subtask> subtasks = new HashMap<>();
+    private final HashMap<Integer, Task> tasks = new HashMap<>();
+    private final HashMap<Integer, Epic> epics = new HashMap<>();
+    private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
     private int seq = 0;
-    private HistoryManager historyManager;
+    private final HistoryManager historyManager;
 
     public InMemoryTaskManager(InMemoryHistoryManager historyManager) {
         this.historyManager = historyManager;
@@ -41,19 +44,19 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task getTask(int id) {
-        historyManager.add(id);
+        historyManager.add(tasks.get(id));
         return tasks.get(id);
     }
 
     @Override
     public Epic getEpic(int id) {
-        historyManager.add(id);
+        historyManager.add(epics.get(id));
         return epics.get(id);
     }
 
     @Override
     public Subtask getSubtask(int id) {
-        historyManager.add(id);
+        historyManager.add(subtasks.get(id));
         return subtasks.get(id);
     }
 
@@ -159,24 +162,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Task> getHistory() {
-        List<Task> historyObjects = new ArrayList<>();
-        List<Integer> historyIds = historyManager.getHistory();
-
-        // Вот тут не уверен: нашел инфу, что копировать список можно посредством добавления старого в новый addAll()
-        // В случае ниже сохранятся сами ссылки на объекты или это будут новые объекты?
-        // p.s. Знаю, что это решение не самое лучшее, однако сложность должна быть O(1)
-        // плюс не хотелось бы уходить от плоской модели с айдишками
-        for (int i = 0; i < historyIds.size(); i++) {
-            int objId = historyIds.get(i);
-            if(tasks.get(objId) != null) {
-                historyObjects.add(tasks.get(objId));
-            } else if (epics.get(objId) != null) {
-                historyObjects.add(epics.get(objId));
-            } else if (subtasks.get(objId) != null) {
-                historyObjects.add(subtasks.get(objId));
-            }
-        }
-        return historyObjects;
+        return historyManager.getHistory();
     }
 
     private void updateStatus(Epic epic) {
