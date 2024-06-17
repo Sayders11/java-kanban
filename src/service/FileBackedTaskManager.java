@@ -8,7 +8,7 @@ import java.nio.charset.StandardCharsets;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
-    private final String CsvPath = "C:\\Users\\Михаил\\IdeaProjects\\java-kanban\\resources\\tasks.csv";
+    private final String csvPath = "C:\\Users\\Михаил\\IdeaProjects\\java-kanban\\resources\\tasks.csv";
 
     public FileBackedTaskManager(InMemoryHistoryManager historyManager, String savedFile) {
         super(historyManager);
@@ -128,7 +128,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private void save() {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(CsvPath))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(csvPath))) {
             writer.write("id,type,name,status,description,epicId");
             writer.newLine();
 
