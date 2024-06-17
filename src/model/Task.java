@@ -8,6 +8,7 @@ public class Task {
     private Status status;
     private String description;
     private int id;
+    private final Type type = Type.TASK;
 
     public Task(String name, String description) {
         this.name = name;
@@ -45,6 +46,10 @@ public class Task {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public Type getType() {
+        return type;
     }
 
     @Override

@@ -2,12 +2,16 @@ package model;
 
 public class Subtask extends Task {
     private int epicId;
-    private final Epic epic;
+    private final Type type = Type.SUBTASK;
 
     public Subtask(String name, String description, Epic epic) {
         super(name, description);
         this.epicId = epic.getId();
-        this.epic = epic;
+    }
+
+    public Subtask(String name, String description, int epicId) {
+        super(name, description);
+        this.epicId = epicId;
     }
 
     public int getEpicId() {
@@ -16,6 +20,10 @@ public class Subtask extends Task {
 
     public void setEpicId(int epicId) {
         this.epicId = epicId;
+    }
+
+    public Type getType() {
+        return type;
     }
 
     @Override
