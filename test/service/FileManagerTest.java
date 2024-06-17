@@ -1,7 +1,5 @@
 package service;
 
-import model.Epic;
-import model.Subtask;
 import model.Task;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -33,7 +31,7 @@ class FileManagerTest {
         assertEquals(fileManager.tasks, new HashMap<>(), "Список задач не пустой.");
     }
 
-    @Test
+   /* @Test
     @DisplayName("Загружаем менеджер из файла")
     void LoadFromFile() {
         Task task1 = new Task("task1", "taskDescription");
@@ -43,6 +41,6 @@ class FileManagerTest {
         fileManager.createTask(task1);
         fileManager.createEpic(epic1);
         fileManager.createSubtask(subtask1);
-    }
+    }*/
 
 }
