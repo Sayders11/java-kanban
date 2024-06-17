@@ -5,17 +5,20 @@ import model.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
-    private final String csvPath = "C:\\Users\\Михаил\\IdeaProjects\\java-kanban\\resources\\tasks.csv";
+    private final Path file;
 
-    public FileBackedTaskManager(InMemoryHistoryManager historyManager, String savedFile) {
+    public FileBackedTaskManager(InMemoryHistoryManager historyManager, Path file) {
         super(historyManager);
+        this.file = file;
     }
 
     public FileBackedTaskManager(InMemoryHistoryManager historyManager) {
         super(historyManager);
+        this.file = Path.of("resources/tasks.csv");
     }
 
     public static FileBackedTaskManager loadFromFile(File file) {
@@ -128,7 +131,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private void save() {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(csvPath))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file.toFile()))) {
             writer.write("id,type,name,status,description,epicId");
             writer.newLine();
 
