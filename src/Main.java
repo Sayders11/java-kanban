@@ -1,12 +1,16 @@
-import service.Managers;
-import service.TaskManager;
-import model.*;
+import model.Epic;
+import model.Status;
+import model.Subtask;
+import model.Task;
+import service.FileBackedTaskManager;
+import service.InMemoryHistoryManager;
 
 
 public class Main {
 
     public static void main(String[] args) {
-        TaskManager taskManager = Managers.getDefaults();
+        //TaskManager taskManager = Managers.getDefaults();
+        FileBackedTaskManager fileManager = new FileBackedTaskManager(new InMemoryHistoryManager());
 
         Task task1 = new Task("First task", "something to do");
         Task task2 = new Task("Second task", "smth should do");
@@ -21,15 +25,15 @@ public class Main {
         Subtask subtask3 = new Subtask("3rd subtask", "hehe",
                 epic2);
 
-        taskManager.createTask(task1);
-        taskManager.createTask(task2);
+        fileManager.createTask(task1);
+        fileManager.createTask(task2);
 
-        taskManager.createEpic(epic1);
-        taskManager.createSubtask(subtask1);
-        taskManager.createSubtask(subtask2);
+        fileManager.createEpic(epic1);
+        fileManager.createSubtask(subtask1);
+        fileManager.createSubtask(subtask2);
 
-        taskManager.createEpic(epic2);
-        taskManager.createSubtask(subtask3);
+        fileManager.createEpic(epic2);
+        fileManager.createSubtask(subtask3);
 
         subtask1.setEpicId(epic1.getId());
         subtask2.setEpicId(epic1.getId());
@@ -54,8 +58,8 @@ public class Main {
 
         subtask3.setStatus(Status.DONE);
 
-        taskManager.updateEpic(epic1);
-        taskManager.updateEpic(epic2);
+        fileManager.updateEpic(epic1);
+        fileManager.updateEpic(epic2);
 
         System.out.println("CHEEECK --------------------------------------");
 
@@ -69,11 +73,11 @@ public class Main {
         System.out.println(epic2);
         System.out.println(subtask3);
 
-        taskManager.deleteTask(task1.getId());
-        taskManager.deleteEpic(epic1.getId());
+        fileManager.deleteTask(task1.getId());
+        fileManager.deleteEpic(epic1.getId());
 
-        taskManager.getAllTasks();
-        taskManager.getAllEpics();
+        fileManager.getAllTasks();
+        fileManager.getAllEpics();
     }
 
 }

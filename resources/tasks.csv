@@ -1,0 +1,6 @@
+id,type,name,status,description,epicId
+2,TASK,Second task,DONE,smth should do
+6,EPIC,Second epic,DONE,2nd epic desc
+4,SUBTASK,1st subtask,IN_PROGRESS,smth,3
+5,SUBTASK,2nd subtask,DONE,do do,3
+7,SUBTASK,3rd subtask,DONE,hehe,6
