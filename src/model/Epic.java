@@ -15,9 +15,6 @@ public class Epic extends Task {
         return subtasksIds;
     }
 
-    public Type getType() {
-        return type;
-    }
 
     public int getSubTaskId(int index) {
         return subtasksIds.get(index);
@@ -37,13 +34,7 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-
-        return "Epic{" +
-                "name='" + getName() + '\'' +
-                ", status='" + getStatus() + '\'' +
-                ", description=" + getDescription() + '\'' +
-                ", id=" + getId() + '\'' +
-                "subtasksIds: " + subtasksIds.toArray();
+        return getId() + "," + getType() + "," + getName() + "," + getStatus() + "," + getDescription();
     }
 
 }

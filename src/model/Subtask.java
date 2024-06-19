@@ -22,18 +22,8 @@ public class Subtask extends Task {
         this.epicId = epicId;
     }
 
-    public Type getType() {
-        return type;
-    }
-
     @Override
     public String toString() {
-
-        return "SubTask{" +
-                "name='" + getName() + '\'' +
-                ", status='" + getStatus() + '\'' +
-                ", description=" + getDescription() + '\'' +
-                ", id=" + getId() + '\'' +
-                ", epicId: " + getEpicId() + '\'';
+        return getId() + "," + getType() + "," + getName() + "," + getStatus() + "," + getDescription() + "," + getEpicId();
     }
 }
