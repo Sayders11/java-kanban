@@ -8,6 +8,7 @@ public class Task {
     private Status status;
     private String description;
     private int id;
+    private final Type type = Type.TASK;
 
     public Task(String name, String description) {
         this.name = name;
@@ -47,6 +48,10 @@ public class Task {
         this.id = id;
     }
 
+    public Type getType() {
+        return type;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -62,12 +67,7 @@ public class Task {
 
     @Override
     public String toString() {
-
-        return "Task{" +
-                "name='" + name + '\'' +
-                ", status='" + status + '\'' +
-                ", description=" + description + '\'' +
-                ", id=" + id + '\'';
+        return getId() + "," + getType() + "," + getName() + "," + getStatus() + "," + getDescription();
     }
 }
 
