@@ -1,5 +1,7 @@
 package model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Task {
@@ -9,11 +11,41 @@ public class Task {
     private String description;
     private int id;
     private final Type type = Type.TASK;
+    private Duration duration;
+    private LocalDateTime startTime;
 
     public Task(String name, String description) {
         this.name = name;
         this.description = description;
         status = Status.NEW;
+    }
+
+    public Task(String name, String description, LocalDateTime startTime, Duration duration) {
+        this.name = name;
+        this.description = description;
+        status = Status.NEW;
+        this.startTime = startTime;
+        this.duration = duration;
+    }
+
+    public LocalDateTime getEndTime() {
+        return startTime.plus(duration);
+    }
+
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
     }
 
     public String getName() {
@@ -67,7 +99,8 @@ public class Task {
 
     @Override
     public String toString() {
-        return getId() + "," + getType() + "," + getName() + "," + getStatus() + "," + getDescription();
+        return getId() + "," + getType() + "," + getName() + "," + getStatus() + "," + getDescription() +
+                getStartTime() + "," + getDuration() + "," + getEndTime();
     }
 }
 

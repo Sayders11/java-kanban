@@ -1,19 +1,21 @@
 package service;
 
+import exceptions.ManagerSaveException;
 import model.Epic;
 import model.Status;
 import model.Subtask;
 import model.Task;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
 
     protected final HashMap<Integer, Task> tasks = new HashMap<>();
     protected final HashMap<Integer, Epic> epics = new HashMap<>();
     protected final HashMap<Integer, Subtask> subtasks = new HashMap<>();
+    protected final TreeSet<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime));
     protected int seq = 0;
     private final HistoryManager historyManager;
 
@@ -21,10 +23,25 @@ public class InMemoryTaskManager implements TaskManager {
         this.historyManager = historyManager;
     }
 
+    public Set<Task> getPrioritizedTasks() {
+        return prioritizedTasks;
+    }
+
+
     @Override
     public Task createTask(Task task) {
-        task.setId(generateId());
-        tasks.put(task.getId(), task);
+        boolean taskCrosses = getPrioritizedTasks().stream().anyMatch(streamingTask ->
+                taskTimeCrosses(streamingTask, task));
+
+        if (taskCrosses) {
+            throw new ManagerSaveException("Задача пересекается по времени с другими!");
+        } else {
+            task.setId(generateId());
+            tasks.put(task.getId(), task);
+            if (task.getStartTime() != null) {
+                prioritizedTasks.add(task);
+            }
+        }
         return task;
     }
 
@@ -37,9 +54,21 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Subtask createSubtask(Subtask subTask) {
-        subTask.setId(generateId());
-        subtasks.put(subTask.getId(), subTask);
-        return subTask;
+        boolean taskCrosses = getPrioritizedTasks().stream().anyMatch(streamingSubtask ->
+                taskTimeCrosses(streamingSubtask, subTask));
+
+        if (taskCrosses) {
+            throw new ManagerSaveException("Задача пересекается по времени с другими!");
+        } else {
+            subTask.setId(generateId());
+            subtasks.put(subTask.getId(), subTask);
+            updateEpicTime(epics.get(subTask.getEpicId()));
+
+            if (subTask.getStartTime() != null) {
+                prioritizedTasks.add(subTask);
+            }
+            return subTask;
+        }
     }
 
     @Override
@@ -195,5 +224,44 @@ public class InMemoryTaskManager implements TaskManager {
 
     private int generateId() {
         return ++seq;
+    }
+
+    private boolean taskTimeCrosses(Task taskInStream, Task task) {
+        if (task.getStartTime().isBefore(taskInStream.getStartTime())
+                && task.getEndTime().isBefore(taskInStream.getStartTime())) {
+            return false;
+        } else return !task.getStartTime().isAfter(taskInStream.getEndTime());
+    }
+
+    private void updateEpicTime(Epic epic) {
+        ArrayList<Integer> subtasksIds = epic.getSubtasksIds();
+
+        try {
+            Optional<LocalDateTime> minStartTime = subtasksIds
+                    .stream()
+                    .map(subtasks::get)
+                    .min(Comparator.comparing(Subtask::getStartTime))
+                    .map(Subtask::getStartTime);
+
+            Optional<LocalDateTime> maxEndTime = subtasksIds
+                    .stream()
+                    .map(subtasks::get)
+                    .max(Comparator.comparing(Subtask::getEndTime))
+                    .map(Subtask::getEndTime);
+
+            long sum = 0L;
+            for (Integer subtasksId : subtasksIds) {
+                Subtask subtask = subtasks.get(subtasksId);
+                long duration = subtask.getDuration().toMinutes();
+                sum += duration;
+            }
+            Optional<Duration> sumDuration = Optional.ofNullable(Duration.ofMinutes(sum));
+
+            minStartTime.ifPresent(epic::setStartTime);
+            maxEndTime.ifPresent(epic::setEndTime);
+            sumDuration.ifPresent(epic::setDuration);
+        } catch (NullPointerException e) {
+            throw new ManagerSaveException();
+        }
     }
 }
