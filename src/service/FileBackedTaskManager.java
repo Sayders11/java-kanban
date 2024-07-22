@@ -166,7 +166,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         switch (taskType) {
             case "TASK":
                 Task backTask = new Task(taskName, taskDescription, LocalDateTime.parse(startTime),
-                        Duration.ofMinutes(Long.parseLong(duration)));
+                        (Duration.parse(duration)));
                 backTask.setId(Integer.parseInt(taskId));
                 backTask.setStatus(Status.valueOf(taskStatus));
                 return backTask;

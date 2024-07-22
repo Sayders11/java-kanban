@@ -53,21 +53,23 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Subtask createSubtask(Subtask subTask) {
+    public Subtask createSubtask(Subtask subtask) {
         boolean taskCrosses = getPrioritizedTasks().stream().anyMatch(streamingSubtask ->
-                taskTimeCrosses(streamingSubtask, subTask));
+                taskTimeCrosses(streamingSubtask, subtask));
 
         if (taskCrosses) {
             throw new ManagerSaveException("Задача пересекается по времени с другими!");
         } else {
-            subTask.setId(generateId());
-            subtasks.put(subTask.getId(), subTask);
-            updateEpicTime(epics.get(subTask.getEpicId()));
+            subtask.setId(generateId());
+            subtasks.put(subtask.getId(), subtask);
 
-            if (subTask.getStartTime() != null) {
-                prioritizedTasks.add(subTask);
+            if (epics.get(subtask.getEpicId()) != null) {
+                updateEpicTime(epics.get(subtask.getEpicId()));
             }
-            return subTask;
+            if (subtask.getStartTime() != null) {
+                prioritizedTasks.add(subtask);
+            }
+            return subtask;
         }
     }
 

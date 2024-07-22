@@ -99,7 +99,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return getId() + "," + getType() + "," + getName() + "," + getStatus() + "," + getDescription() +
+        return getId() + "," + getType() + "," + getName() + "," + getStatus() + "," + getDescription() + "," +
                 getStartTime() + "," + getDuration() + "," + getEndTime();
     }
 }
