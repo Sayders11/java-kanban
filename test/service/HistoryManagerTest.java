@@ -7,6 +7,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -23,18 +27,16 @@ class HistoryManagerTest {
 
     @BeforeEach
     void init() {
-        Task task1 = new Task("task1", "taskDescription");
-        this.task1 = task1;
-        Task task2 = new Task("task2", "taskDescription");
-        this.task2 = task2;
-        Epic epic1 = new Epic("epic1", "epicDescription");
-        this.epic1 = epic1;
-        Epic epic2 = new Epic("epic2", "epicDescription");
-        this.epic2 = epic2;
-        Subtask subtask1 = new Subtask("subtask1", "subtaskDescription", epic1);
-        this.subtask1 = subtask1;
-        Subtask subtask2 = new Subtask("subtask2", "subtaskDescription", epic2);
-        this.subtask2 = subtask2;
+        task1 = new Task("task1", "task1 Description", LocalDateTime.now()
+                .truncatedTo(ChronoUnit.MINUTES), Duration.ofMinutes(15));
+        task2 = new Task("task2", "task2 Description", LocalDateTime.now()
+                .truncatedTo(ChronoUnit.MINUTES).plusMinutes(30), Duration.ofMinutes(15));
+        epic1 = new Epic("epic1", "epic1 Description");
+        epic2 = new Epic("epic2", "epic2 Description");
+        subtask1 = new Subtask("subtask1", "subtask2description", epic1, LocalDateTime.now()
+                .truncatedTo(ChronoUnit.MINUTES).plusMinutes(60), Duration.ofMinutes(15));
+        subtask2 = new Subtask("subtask2", "subtask2 Description", epic1, LocalDateTime.now()
+                .truncatedTo(ChronoUnit.MINUTES).plusMinutes(90), Duration.ofMinutes(15));
 
         tManager.createTask(task1);
         tManager.createTask(task2);
