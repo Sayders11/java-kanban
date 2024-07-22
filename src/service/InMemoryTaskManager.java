@@ -229,31 +229,11 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     private boolean taskTimeCrosses(Task taskInStream, Task task) {
-        LocalDateTime start;
-        LocalDateTime end;
-        LocalDateTime startNew = task.getStartTime();
-        LocalDateTime endNew = task.getEndTime();
-
-        for (Task createdTask : prioritizedTasks) {
-            start = createdTask.getStartTime();
-            end = createdTask.getEndTime();
-
-            if (start == null) continue;
-            if ((startNew.isAfter(start) && startNew.isBefore(end))
-                    || endNew.isAfter(start) && endNew.isBefore(end)
-                    || (startNew.isEqual(start) || endNew.isEqual(end)))
-                return true;
-        }
-        return false;
-
-    }
-
-
-        /*if (task.getStartTime().isBefore(taskInStream.getStartTime())
+        if (task.getStartTime().isBefore(taskInStream.getStartTime())
                 && task.getEndTime().isBefore(taskInStream.getStartTime())) {
             return false;
         } else return !task.getStartTime().isAfter(taskInStream.getEndTime());
-    }*/
+    }
 
     private void updateEpicTime(Epic epic) {
         ArrayList<Integer> subtasksIds = epic.getSubtasksIds();
