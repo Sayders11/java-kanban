@@ -238,6 +238,7 @@ public class InMemoryTaskManager implements TaskManager {
             start = createdTask.getStartTime();
             end = createdTask.getEndTime();
 
+            if (start == null) continue;
             if ((startNew.isAfter(start) && startNew.isBefore(end))
                     || endNew.isAfter(start) && endNew.isBefore(end)
                     || (startNew.isEqual(start) || endNew.isEqual(end)))
