@@ -23,24 +23,20 @@ public class InMemoryTaskManager implements TaskManager {
         this.historyManager = historyManager;
     }
 
-    public Set<Task> getPrioritizedTasks() {
+    public TreeSet<Task> getPrioritizedTasks() {
         return prioritizedTasks;
     }
 
-
     @Override
     public Task createTask(Task task) {
-        boolean taskCrosses = getPrioritizedTasks().stream().anyMatch(streamingTask ->
-                taskTimeCrosses(streamingTask, task));
-
+        boolean taskCrosses = crossTime(task);
         if (taskCrosses) {
             throw new ManagerSaveException("Задача пересекается по времени с другими!");
-        } else {
-            task.setId(generateId());
-            tasks.put(task.getId(), task);
-            if (task.getStartTime() != null) {
-                prioritizedTasks.add(task);
-            }
+        }
+        task.setId(generateId());
+        tasks.put(task.getId(), task);
+        if (task.getStartTime() != null) {
+            prioritizedTasks.add(task);
         }
         return task;
     }
@@ -54,23 +50,20 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Subtask createSubtask(Subtask subtask) {
-        boolean taskCrosses = getPrioritizedTasks().stream().anyMatch(streamingSubtask ->
-                taskTimeCrosses(streamingSubtask, subtask));
-
+        boolean taskCrosses = crossTime(subtask);
         if (taskCrosses) {
             throw new ManagerSaveException("Задача пересекается по времени с другими!");
-        } else {
-            subtask.setId(generateId());
-            subtasks.put(subtask.getId(), subtask);
-
-            if (epics.get(subtask.getEpicId()) != null) {
-                updateEpicTime(epics.get(subtask.getEpicId()));
-            }
-            if (subtask.getStartTime() != null) {
-                prioritizedTasks.add(subtask);
-            }
-            return subtask;
         }
+        subtask.setId(generateId());
+        subtasks.put(subtask.getId(), subtask);
+
+        if (epics.get(subtask.getEpicId()) != null) {
+            updateEpicTime(epics.get(subtask.getEpicId()));
+        }
+        if (subtask.getStartTime() != null) {
+            prioritizedTasks.add(subtask);
+        }
+        return subtask;
     }
 
     @Override
@@ -232,7 +225,13 @@ public class InMemoryTaskManager implements TaskManager {
         if (task.getStartTime().isBefore(taskInStream.getStartTime())
                 && task.getEndTime().isBefore(taskInStream.getStartTime())) {
             return false;
-        } else return !task.getStartTime().isAfter(taskInStream.getEndTime());
+        }
+        return !task.getStartTime().isAfter(taskInStream.getEndTime());
+    }
+
+    private boolean crossTime(Task task) {
+        return getPrioritizedTasks().stream().anyMatch(streamingTask ->
+                taskTimeCrosses(streamingTask, task));
     }
 
     private void updateEpicTime(Epic epic) {
@@ -260,8 +259,9 @@ public class InMemoryTaskManager implements TaskManager {
             Optional<Duration> sumDuration = Optional.ofNullable(Duration.ofMinutes(sum));
 
             minStartTime.ifPresent(epic::setStartTime);
-            maxEndTime.ifPresent(epic::setEndTime);
+            epic.calcEndTime(getAllSubtasks());
             sumDuration.ifPresent(epic::setDuration);
+
         } catch (NullPointerException e) {
             throw new ManagerSaveException();
         }

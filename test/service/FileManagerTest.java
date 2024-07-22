@@ -21,9 +21,6 @@ class FileManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     FileBackedTaskManager manager;
     File taskFile;
     File emptyFile;
-    /*Task task1;
-    Epic epic1;
-    Subtask subtask1;*/
 
     @BeforeEach
     @Override
@@ -51,7 +48,7 @@ class FileManagerTest extends TaskManagerTest<FileBackedTaskManager> {
 
     @Test
     @DisplayName("Загружаем менеджер из пустого файла")
-    void LoadFromEmptyFile() throws IOException {
+    void loadFromEmptyFile() throws IOException {
         emptyFile = File.createTempFile("emptyFile.csv", null);
         FileBackedTaskManager fileManager = FileBackedTaskManager.loadFromFile(this.emptyFile);
         assertTrue(fileManager.tasks.isEmpty(), "Список задач не пустой.");
@@ -59,7 +56,7 @@ class FileManagerTest extends TaskManagerTest<FileBackedTaskManager> {
 
     @Test
     @DisplayName("Загружаем менеджер из файла")
-    void LoadFromFile() throws IOException {
+    void loadFromFile() throws IOException {
         FileBackedTaskManager fileManager = FileBackedTaskManager.loadFromFile(taskFile);
         assertEquals(manager.tasks, fileManager.tasks, "Списки задач не одинаковы");
     }

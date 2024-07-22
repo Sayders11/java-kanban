@@ -3,6 +3,8 @@ package model;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Optional;
 
 public class Epic extends Task {
 
@@ -14,8 +16,12 @@ public class Epic extends Task {
         super(name, description, LocalDateTime.now(), Duration.ofMinutes(0));
     }
 
-    public void setEndTime(LocalDateTime endTime) {
-        this.endTime = endTime;
+    public void calcEndTime(ArrayList<Subtask> subtasksList) {
+        Optional<LocalDateTime> maxEndTime = subtasksList
+                .stream()
+                .max(Comparator.comparing(Subtask::getEndTime))
+                .map(Subtask::getEndTime);
+        maxEndTime.ifPresent(this::setEndTime);
     }
 
     @Override
@@ -48,6 +54,10 @@ public class Epic extends Task {
     public String toString() {
         return getId() + "," + getType() + "," + getName() + "," + getStatus() + "," + getDescription() + "," +
                 getStartTime() + "," + getDuration() + "," + getEndTime();
+    }
+
+    private void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
     }
 
 }
