@@ -9,64 +9,55 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayName("Менеджер истории")
-class FileManagerTest {
-    FileBackedTaskManager fileManager;
+class FileManagerTest extends TaskManagerTest<FileBackedTaskManager> {
+    FileBackedTaskManager manager;
     File taskFile;
-    Task task1;
-    Epic epic1;
-    Subtask subtask1;
+    File emptyFile;
 
     @BeforeEach
-    void init() throws IOException {
-        this.taskFile = File.createTempFile("tasksFile.csv", null);
-        this.fileManager = new FileBackedTaskManager(new InMemoryHistoryManager(), taskFile.toPath());
-        this.task1 = new Task("Task1Name", "Task1Desc");
-        this.epic1 = new Epic("Epic1Name", "Epic1Desc");
-        this.subtask1 = new Subtask("Subtask1Name", "Subtask1Desc", epic1);
+    @Override
+    public void createManagers() {
+        task1 = new Task("task1", "task1 Description", LocalDateTime.now()
+                .truncatedTo(ChronoUnit.MINUTES), Duration.ofMinutes(15));
+        task2 = new Task("task2", "task2 Description", LocalDateTime.now()
+                .truncatedTo(ChronoUnit.MINUTES).plusMinutes(30), Duration.ofMinutes(15));
+        epic1 = new Epic("epic1", "epic1 Description");
+        epic2 = new Epic("epic2", "epic2 Description");
+        subtask1 = new Subtask("subtask1", "subtask2description", epic1, LocalDateTime.now()
+                .truncatedTo(ChronoUnit.MINUTES).plusMinutes(60), Duration.ofMinutes(15));
+        subtask2 = new Subtask("subtask2", "subtask2 Description", epic1, LocalDateTime.now()
+                .truncatedTo(ChronoUnit.MINUTES).plusMinutes(90), Duration.ofMinutes(15));
+
+        try {
+            taskFile = File.createTempFile("tasksFile.csv", null);
+            manager = new FileBackedTaskManager(new InMemoryHistoryManager(), taskFile.toPath());
+            manager.createTask(task1);
+            manager.createTask(task2);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
     @DisplayName("Загружаем менеджер из пустого файла")
-    void LoadFromEmptyFile() throws IOException {
-        FileBackedTaskManager fileManager2 = FileBackedTaskManager.loadFromFile(this.taskFile);
-        assertEquals(fileManager.tasks, fileManager2.tasks, "Список задач не пустой.");
+    void loadFromEmptyFile() throws IOException {
+        emptyFile = File.createTempFile("emptyFile.csv", null);
+        FileBackedTaskManager fileManager = FileBackedTaskManager.loadFromFile(this.emptyFile);
+        assertTrue(fileManager.tasks.isEmpty(), "Список задач не пустой.");
     }
 
     @Test
     @DisplayName("Загружаем менеджер из файла")
-    void LoadFromFile() throws IOException {
-        Task task1 = new Task("Task1Name", "Task1Desc");
-        fileManager.createTask(task1);
-
-        FileBackedTaskManager fileManager2 = FileBackedTaskManager.loadFromFile(taskFile);
-
-        assertEquals(fileManager.tasks, fileManager2.tasks, "Списки задач не одинаковы");
+    void loadFromFile() throws IOException {
+        FileBackedTaskManager fileManager = FileBackedTaskManager.loadFromFile(taskFile);
+        assertEquals(manager.tasks, fileManager.tasks, "Списки задач не одинаковы");
     }
-
-    @Test
-    @DisplayName("Создать задачу")
-    void shouldCreateAndReturnTask() throws IOException {
-        fileManager.createTask(task1);
-        assertNotNull(fileManager.getTask(task1.getId()), "Задача не создана");
-    }
-
-    @Test
-    @DisplayName("Создать эпик")
-    void shouldCreateAndReturnEpic() {
-        fileManager.createEpic(epic1);
-        assertNotNull(fileManager.getEpic(epic1.getId()), "Эпик не создан");
-    }
-
-    @Test
-    @DisplayName("Создать подзадачу")
-    void shouldCreateAndReturnSubtask() {
-        fileManager.createSubtask(subtask1);
-        assertNotNull(fileManager.getSubtask(subtask1.getId()), "Подзадача не создана");
-    }
-
 }

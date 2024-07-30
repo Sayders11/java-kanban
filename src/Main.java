@@ -12,8 +12,8 @@ public class Main {
         //TaskManager taskManager = Managers.getDefaults();
         FileBackedTaskManager fileManager = new FileBackedTaskManager(new InMemoryHistoryManager());
 
-        Task task1 = new Task("First task", "something to do");
-        Task task2 = new Task("Second task", "smth should do");
+        Task task1 = new Task("task1", "something to do");
+        Task task2 = new Task("task2", "smth should do");
 
         Epic epic1 = new Epic("First epic", "1st epic desc");
         Epic epic2 = new Epic("Second epic", "2nd epic desc");

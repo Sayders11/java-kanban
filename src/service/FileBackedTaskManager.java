@@ -6,6 +6,8 @@ import model.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
@@ -130,7 +132,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private void save() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file.toFile()))) {
-            writer.write("id,type,name,status,description,epicId");
+            writer.write("id,type,name,status,description,epicId,startTime,duration,endTime");
             writer.newLine();
 
             for (Task task : tasks.values()) {
@@ -157,11 +159,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         String taskName = parts[2];
         String taskStatus = parts[3];
         String taskDescription = parts[4];
+        String startTime = parts[5];
+        String duration = parts[6];
 
 
         switch (taskType) {
             case "TASK":
-                Task backTask = new Task(taskName, taskDescription);
+                Task backTask = new Task(taskName, taskDescription, LocalDateTime.parse(startTime),
+                        (Duration.parse(duration)));
                 backTask.setId(Integer.parseInt(taskId));
                 backTask.setStatus(Status.valueOf(taskStatus));
                 return backTask;
@@ -171,8 +176,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 backEpic.setStatus(Status.valueOf(taskStatus));
                 return backEpic;
             case "SUBTASK":
-                String epicId = parts[5];
-                Subtask backSubtask = new Subtask(taskName, taskDescription, Integer.parseInt(epicId));
+                String epicId = parts[7];
+                Subtask backSubtask = new Subtask(taskName, taskDescription, LocalDateTime.parse(startTime),
+                        Duration.ofMinutes(Long.parseLong(duration)), Integer.parseInt(epicId));
                 backSubtask.setId(Integer.parseInt(taskId));
                 backSubtask.setStatus(Status.valueOf(taskStatus));
 
