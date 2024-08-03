@@ -1,16 +1,8 @@
-import model.Epic;
-import model.Status;
-import model.Subtask;
-import model.Task;
-import service.FileBackedTaskManager;
-import service.InMemoryHistoryManager;
-
-
 public class Main {
 
     public static void main(String[] args) {
         //TaskManager taskManager = Managers.getDefaults();
-        FileBackedTaskManager fileManager = new FileBackedTaskManager(new InMemoryHistoryManager());
+        /*FileBackedTaskManager fileManager = new FileBackedTaskManager(new InMemoryHistoryManager());
 
         Task task1 = new Task("task1", "something to do");
         Task task2 = new Task("task2", "smth should do");
@@ -78,6 +70,6 @@ public class Main {
 
         fileManager.getAllTasks();
         fileManager.getAllEpics();
+    */
     }
-
 }
