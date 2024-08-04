@@ -43,9 +43,13 @@ public class SubtaskHandler extends BaseHttpHandler {
             sendServerError(exchange);
             return;
         }
-
+        Subtask subtask;
         try {
-            Subtask subtask = manager.getSubtask(optId.get());
+            subtask = manager.getSubtask(optId.get());
+            if (subtask == null) {
+                throw new NullPointerException();
+            }
+
             String text = gson.toJson(subtask);
             sendText(exchange, text);
         } catch (NullPointerException exception) {
@@ -60,10 +64,11 @@ public class SubtaskHandler extends BaseHttpHandler {
         Subtask subtask = gson.fromJson(new String(inputStream.readAllBytes(), DEFAULT_CHARSET), Subtask.class);
 
         try {
-            manager.createSubtask(subtask);
+            Subtask newSubtask = manager.createSubtask(subtask);
+            if (newSubtask == null) {
+                throw new ManagerSaveException();
+            }
             sendPostSuccess(exchange);
-        } catch (NullPointerException e) {
-            sendNotFound(exchange);
         } catch (ManagerSaveException e) {
             sendHasInteractions(exchange);
         }
@@ -86,6 +91,11 @@ public class SubtaskHandler extends BaseHttpHandler {
         }
 
         try {
+            Subtask subtask = manager.getSubtask(optId.get());
+            if (subtask == null) {
+                throw new NullPointerException();
+            }
+
             manager.deleteSubtask(optId.get());
             sendText(exchange, "Подзадача успешно удалена.");
         } catch (NullPointerException e) {

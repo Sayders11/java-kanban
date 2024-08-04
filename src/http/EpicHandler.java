@@ -45,8 +45,13 @@ public class EpicHandler extends BaseHttpHandler {
             return;
         }
 
+        Epic epic;
         try {
-            Epic epic = manager.getEpic(optId.get());
+            epic = manager.getEpic(optId.get());
+            if (epic == null) {
+                throw new NullPointerException();
+            }
+
             String text = gson.toJson(epic);
             sendText(exchange, text);
         } catch (NullPointerException exception) {
@@ -61,10 +66,11 @@ public class EpicHandler extends BaseHttpHandler {
         Epic epic = gson.fromJson(new String(inputStream.readAllBytes(), DEFAULT_CHARSET), Epic.class);
 
         try {
-            manager.createEpic(epic);
+            Epic newEpic = manager.createEpic(epic);
+            if (epic == null) {
+                throw new ManagerSaveException();
+            }
             sendPostSuccess(exchange);
-        } catch (NullPointerException e) {
-            sendNotFound(exchange);
         } catch (ManagerSaveException e) {
             sendHasInteractions(exchange);
         }
@@ -87,6 +93,11 @@ public class EpicHandler extends BaseHttpHandler {
         }
 
         try {
+            Epic epic = manager.getEpic(optId.get());
+            if (epic == null) {
+                throw new NullPointerException();
+            }
+
             manager.deleteEpic(optId.get());
             sendText(exchange, "Эпик успешно удален.");
         } catch (NullPointerException e) {
@@ -103,8 +114,13 @@ public class EpicHandler extends BaseHttpHandler {
             return;
         }
 
+        Epic epic;
         try {
-            Epic epic = manager.getEpic(optId.get());
+            epic = manager.getEpic(optId.get());
+            if (epic == null) {
+                throw new NullPointerException();
+            }
+
             String text = gson.toJson(manager.getSubtasksFromEpic(optId.get()));
             sendText(exchange, text);
         } catch (NullPointerException exception) {

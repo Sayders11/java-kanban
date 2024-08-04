@@ -3,7 +3,6 @@ package http.adapter;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import exceptions.ManagerSaveException;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -15,11 +14,7 @@ public class LocalDateAdapter extends TypeAdapter<LocalDateTime> {
 
     @Override
     public void write(final JsonWriter jsonWriter, final LocalDateTime localDateTime) throws IOException {
-        try {
-            jsonWriter.value(localDateTime.format(FORMAT));
-        } catch (NullPointerException e) {
-            throw new ManagerSaveException();
-        }
+        jsonWriter.value(localDateTime.format(FORMAT));
     }
 
     @Override

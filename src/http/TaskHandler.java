@@ -47,6 +47,10 @@ public class TaskHandler extends BaseHttpHandler {
         Task task;
         try {
             task = manager.getTask(optId.get());
+            if (task == null) {
+                throw new NullPointerException();
+            }
+
             String text = gson.toJson(task);
             sendText(exchange, text);
         } catch (NullPointerException exception) {
@@ -61,10 +65,11 @@ public class TaskHandler extends BaseHttpHandler {
         Task task = gson.fromJson(new String(inputStream.readAllBytes(), DEFAULT_CHARSET), Task.class);
 
         try {
-            manager.createTask(task);
+            Task newTask = manager.createTask(task);
+            if (newTask == null) {
+                throw new ManagerSaveException();
+            }
             sendPostSuccess(exchange);
-        } catch (NullPointerException e) {
-            sendNotFound(exchange);
         } catch (ManagerSaveException e) {
             sendHasInteractions(exchange);
         }
@@ -85,8 +90,13 @@ public class TaskHandler extends BaseHttpHandler {
             sendServerError(exchange);
             return;
         }
-        // Если так сделать ОК, то после ревью в остальных хендлерах тоже такой код поправлю.
+
         try {
+            Task task = manager.getTask(optId.get());
+            if (task == null) {
+                throw new NullPointerException();
+            }
+
             manager.deleteTask(optId.get());
             sendText(exchange, "Задача успешно удалена.");
         } catch (NullPointerException e) {
